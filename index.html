@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Sample HTML Page</title>
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Hong Kong International Airport Flight Information</h1>
+    </header>
+    <div class="container">
+      <div class="tab-container">
+        <h3 class="current-date" style="font-weight: 600"></h3>
+        <div class="switch-container">
+          <div class="switch-box">
+            <span class="dept decoration">Departure</span>
+            <input type="checkbox" id="toggle-btn" unchecked />
+            <label for="toggle-btn" class="switch-btn"></label>
+            <span class="arr">Arrival</span>
+          </div>
+        </div>
+        <p class="dp-info">Departure Information</p>
+        <p class="ar-info hidden">Arrival Information</p>
+
+        <div class="load-container">
+          <p class="load-btn load-early">Load Early Flights</p>
+        </div>
+      </div>
+      <div class="departure-flights-container">
+        <!-- <div class="flight-component">
+          <div class="flight-no">Flight No.:</div>
+          <div class="time">Schedule Time:</div>
+          <div class="airport">Destination (Airport):</div>
+          <div class="flight-data">Terminal:</div>
+          <div class="status">Status:</div>
+        </div> -->
+      </div>
+      <div class="arrival-flights-container">
+        <!-- <div class="flight-component">
+          <div class="flight-no">Flight No.:</div>
+          <div class="time">Schedule Time:</div>
+          <div class="airport">Origin (Airport):</div>
+          <div class="flight-data">Terminal:</div>
+          <div class="status">Status:</div>
+        </div> -->
+      </div>
+      <div class="load-container">
+        <p class="load-btn load-more">Load More Flights</p>
+      </div>
+    </div>
+  </body>
+</html>
