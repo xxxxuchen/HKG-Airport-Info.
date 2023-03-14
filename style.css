@@ -9,6 +9,7 @@ body {
   font-weight: 500;
   color: rgb(80, 78, 78);
   background-color: #f1f3f5;
+  padding-bottom: 30px;
 }
 header {
   width: 99%;
@@ -89,7 +90,7 @@ header h1 {
   height: 30px;
   background: #1c7ed6;
   border-radius: 50%;
-  transition: left 400ms linear;
+  transition: left 350ms linear;
 }
 #toggle-btn:checked + label:before {
   left: 30px;
@@ -133,6 +134,7 @@ header h1 {
 
 .airport {
   grid-column: 1/-1;
+  width: auto;
 }
 
 .decoration {
