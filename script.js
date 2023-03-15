@@ -53,24 +53,26 @@ window.addEventListener("load", function () {
 });
 
 switchBtn.addEventListener("click", function () {
+  loadEarly = false;
+  loadMore = false;
   loadMoreBtn.style.display = "block";
   myToggle();
   getFlightComponent(arrival, loadMore);
   removeFlightsContainer(arrival);
 });
 
-loadEarlyBtn.addEventListener("click", function () {
+loadEarlyBtn.addEventListener("click", function (e) {
+  e.preventDefault();
   removeFlightsContainer(!arrival);
   loadEarly = true;
   getFlightComponent(arrival, loadMore, loadEarly);
-  loadEarly = false;
 });
 
-loadMoreBtn.addEventListener("click", function () {
+loadMoreBtn.addEventListener("click", function (e) {
+  e.preventDefault();
   removeFlightsContainer(!arrival);
   loadMore = true;
-  getFlightComponent(arrival, loadMore);
-  loadMore = false;
+  getFlightComponent(arrival, loadMore, loadEarly);
   loadMoreBtn.style.display = "none";
 });
 
@@ -126,9 +128,49 @@ const displayFlight = function (arrival, list) {
   }
 };
 
-// const appendEarlyFlights = function(){
+const appendDayBeforeFlights = function (dayBeforeArray, isArr) {
+  console.log("appendDayBeforeFlights is called");
+  console.log(dayBeforeArray.list);
+  dayBeforeArray.list.forEach((schedule) => {
+    displayFlight(isArr, schedule);
+  });
+};
 
-// }
+const renderAirportInfo = function (dataArray, isArrival) {
+  let airportInfo = "";
+  if (isArrival) {
+    const childList = arrFlightsContainer.children;
+    Array.from(childList).forEach((component) => {
+      const arrNode = component.querySelector(".origin");
+      const codes = arrNode.textContent.split(",");
+      codes.forEach((code) => {
+        for (const data of dataArray) {
+          if (data.iata_code === code) {
+            airportInfo += `${data.municipality}&nbsp;(${data.name})<br>`;
+          }
+        }
+      });
+      arrNode.innerHTML = `Origin (Airport):<br>${airportInfo}`;
+      airportInfo = "";
+    });
+  } else {
+    const childList = deptFlightsContainer.children;
+    Array.from(childList).forEach((component) => {
+      const destNode = component.querySelector(".destination");
+      const codes = destNode.textContent.split(",");
+      codes.forEach((code) => {
+        for (const data of dataArray) {
+          if (data.iata_code === code) {
+            airportInfo += `${data.municipality}&nbsp;(${data.name})<br>`;
+          }
+        }
+      });
+      destNode.innerHTML = `Destination (Airport):<br>${airportInfo}`;
+      airportInfo = "";
+    });
+  }
+};
+
 let count = 0;
 const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
   fetch(
@@ -142,8 +184,11 @@ const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
         [dayBeforeData, onDayData] = data;
         console.log(dayBeforeData);
         console.log(onDayData);
-      } else if (data.length == 1) {
-        onDayData = data[0];
+      } else if (data.length == 1) onDayData = data[0];
+      if (dayBeforeData && isLoadEarly) {
+        appendDayBeforeFlights(dayBeforeData, isArrival);
+        aHtml = "";
+        dHtml = "";
       }
       for (const schedule of onDayData.list) {
         const hourMin = schedule.time.split(":");
@@ -174,41 +219,6 @@ const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
     .then((iataArray) => {
       renderAirportInfo(iataArray, isArrival);
     });
-};
-
-const renderAirportInfo = function (dataArray, isArrival) {
-  let airportInfo = "";
-  if (isArrival) {
-    const childList = arrFlightsContainer.children;
-    Array.from(childList).forEach((component) => {
-      const arrNode = component.querySelector(".origin");
-      const codes = arrNode.textContent.split(",");
-      codes.forEach((code) => {
-        for (const data of dataArray) {
-          if (data.iata_code === code) {
-            airportInfo += `${data.municipality}&nbsp;(${data.name})&nbsp;&nbsp;&nbsp;&#32`;
-          }
-        }
-      });
-      arrNode.innerHTML = `Origin (Airport): ${airportInfo}`;
-      airportInfo = "";
-    });
-  } else {
-    const childList = deptFlightsContainer.children;
-    Array.from(childList).forEach((component) => {
-      const destNode = component.querySelector(".destination");
-      const codes = destNode.textContent.split(",");
-      codes.forEach((code) => {
-        for (const data of dataArray) {
-          if (data.iata_code === code) {
-            airportInfo += `${data.municipality}&nbsp;(${data.name})&nbsp;&nbsp;&nbsp;&#32`;
-          }
-        }
-      });
-      destNode.innerHTML = `Destination (Airport): ${airportInfo}`;
-      airportInfo = "";
-    });
-  }
 };
 
 // const getAirport = function (iataCode, isDeparture) {

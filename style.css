@@ -15,10 +15,11 @@ header {
   width: 99%;
   margin: 0 auto;
   background-color: #66d9e8;
-  height: 8rem;
+  height: 18vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 5px;
 }
 
 header h1 {
@@ -134,7 +135,7 @@ header h1 {
 
 .airport {
   grid-column: 1/-1;
-  width: auto;
+  width: fit-content;
 }
 
 .decoration {
