@@ -1,5 +1,4 @@
 "use strict";
-
 const CurDate = document.querySelector(".current-date");
 const dept = document.querySelector(".dept");
 const arr = document.querySelector(".arr");
@@ -14,6 +13,7 @@ const arrFlightsContainer = document.querySelector(
 );
 let flightComponent = document.querySelector(".flight-component");
 const loadEarlyBtn = document.querySelector(".load-early");
+const noMoreString = document.querySelector(".no-more");
 const loadMoreBtn = document.querySelector(".load-more");
 
 var monthNumber = [
@@ -45,17 +45,16 @@ const min = now.getMinutes();
 
 // for query string
 const dateString = `${year}-${month + 1}-${day}`;
+// for website rendering
 CurDate.textContent = `Date: ${day} ${monthNumber[month]} ${year}`;
 
-//load while displaying the flights(Initialization page)
+// page load and displaying the flights(Initialization)
 window.addEventListener("load", function () {
   getFlightComponent(arrival, loadMore);
 });
 
 switchBtn.addEventListener("click", function () {
-  loadEarly = false;
-  loadMore = false;
-  loadMoreBtn.style.display = "block";
+  removeOrAddBtn(true);
   myToggle();
   getFlightComponent(arrival, loadMore);
   removeFlightsContainer(arrival);
@@ -66,6 +65,7 @@ loadEarlyBtn.addEventListener("click", function (e) {
   removeFlightsContainer(!arrival);
   loadEarly = true;
   getFlightComponent(arrival, loadMore, loadEarly);
+  loadEarlyBtn.style.display = "none";
 });
 
 loadMoreBtn.addEventListener("click", function (e) {
@@ -73,12 +73,25 @@ loadMoreBtn.addEventListener("click", function (e) {
   removeFlightsContainer(!arrival);
   loadMore = true;
   getFlightComponent(arrival, loadMore, loadEarly);
-  loadMoreBtn.style.display = "none";
+  removeOrAddBtn(false);
 });
 
+// true for add, false for remove
+const removeOrAddBtn = function (add) {
+  if (add) {
+    loadMoreBtn.style.display = "block";
+    loadEarlyBtn.style.display = "block";
+    noMoreString.classList.add("hidden");
+  } else {
+    loadMoreBtn.style.display = "none";
+    noMoreString.classList.remove("hidden");
+  }
+};
+
 const myToggle = function () {
-  // console.log("switching");
   arrival = !arrival;
+  loadEarly = false;
+  loadMore = false;
   dept.classList.toggle("decoration");
   arr.classList.toggle("decoration");
   deptInfo.classList.toggle("hidden");
@@ -107,33 +120,25 @@ const displayFlight = function (arrival, list) {
     const originString = [...list.origin];
     aHtml = `
     <div class="flight-component"> 
-      <div class="flight-no">Flight No.: <span>${flightNumberStr}</span></div>
-      <div class="time">Schedule Time: <span>${list.time}</span></div>
+      <div class="flight-no"><span class="bold">Flight No.:</span> <span>${flightNumberStr}</span></div>
+      <div class="time"><span class="bold">Schedule Time:</span> <span>${list.time}</span></div>
       <div class="airport origin">${originString}</div>
-      <div class="flight-data">Parking Stand: ${list.stand}&nbsp;&nbsp;&nbsp;&#32Hall:${list.hall}&nbsp;&nbsp;&nbsp;&#32Belt:${list.baggage}</div>
-      <div class="status">Status: <span>${list.status}</span></div>
+      <div class="flight-data"><span class="bold">Parking Stand:</span>&nbsp;${list.stand}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Hall:</span>&nbsp;${list.hall}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Belt:</span>&nbsp;${list.baggage}</div>
+      <div class="status"><span class="bold">Status:</span>&nbsp;<span>${list.status}</span></div>
     </div>  `;
     arrFlightsContainer.insertAdjacentHTML("beforeend", aHtml);
   } else {
     const destinationString = [...list.destination];
     dHtml = `
     <div class="flight-component"> 
-      <div class="flight-no">Flight No.: ${flightNumberStr}</div>
-      <div class="time">Schedule Time: ${list.time}</div>
+      <div class="flight-no"><span class="bold">Flight No.:</span> ${flightNumberStr}</div>
+      <div class="time"><span class="bold">Schedule Time:</span> ${list.time}</div>
       <div class="airport destination">${destinationString}</div>
-      <div class="flight-data">Terminal: ${list.terminal}&nbsp;&nbsp;&nbsp;&#32Aisle:${list.aisle}&nbsp;&nbsp;&nbsp;&#32Gate:${list.gate} </div>
-      <div class="status">Status: ${list.status} </div>
+      <div class="flight-data"><span class="bold">Terminal:</span>&nbsp;${list.terminal}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Aisle:</span>&nbsp;${list.aisle}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Gate:</span>&nbsp;${list.gate} </div>
+      <div class="status"><span class="bold">Status:</span>&nbsp;${list.status} </div>
     </div>  `;
     deptFlightsContainer.insertAdjacentHTML("beforeend", dHtml);
   }
-};
-
-const appendDayBeforeFlights = function (dayBeforeArray, isArr) {
-  console.log("appendDayBeforeFlights is called");
-  console.log(dayBeforeArray.list);
-  dayBeforeArray.list.forEach((schedule) => {
-    displayFlight(isArr, schedule);
-  });
 };
 
 const renderAirportInfo = function (dataArray, isArrival) {
@@ -150,7 +155,7 @@ const renderAirportInfo = function (dataArray, isArrival) {
           }
         }
       });
-      arrNode.innerHTML = `Origin (Airport):<br>${airportInfo}`;
+      arrNode.innerHTML = `<span class="bold">Origin (Airport):</span><br>${airportInfo}`;
       airportInfo = "";
     });
   } else {
@@ -165,13 +170,26 @@ const renderAirportInfo = function (dataArray, isArrival) {
           }
         }
       });
-      destNode.innerHTML = `Destination (Airport):<br>${airportInfo}`;
+      destNode.innerHTML = `<span class="bold">Destination (Airport):</span><br>${airportInfo}`;
       airportInfo = "";
     });
   }
 };
 
+const getAirportPromise = async function () {
+  const response = await fetch("iata.json");
+  const dataArray = await response.json();
+  return dataArray;
+};
+
+// use IIFE to store the data form iata.json
+let iataArray;
+(async function () {
+  iataArray = await getAirportPromise();
+})();
+
 let count = 0;
+// main function
 const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
   fetch(
     `flight.php?date=${dateString}&lang=en&cargo=false&arrival=${isArrival}`
@@ -185,10 +203,11 @@ const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
         console.log(dayBeforeData);
         console.log(onDayData);
       } else if (data.length == 1) onDayData = data[0];
+      // append the day before flights first
       if (dayBeforeData && isLoadEarly) {
-        appendDayBeforeFlights(dayBeforeData, isArrival);
-        aHtml = "";
-        dHtml = "";
+        dayBeforeData.list.forEach((schedule) => {
+          displayFlight(isArrival, schedule);
+        });
       }
       for (const schedule of onDayData.list) {
         const hourMin = schedule.time.split(":");
@@ -204,18 +223,15 @@ const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
             displayFlight(isArrival, schedule);
           }
         } else {
+          // display from the start of on day flight to the real time flights
           if (isLoadEarly) displayFlight(isArrival, schedule);
         }
       }
-      if (count < 10) {
-        loadMoreBtn.style.display = "none";
-      }
+      // when flights number is less than 10, no loadMore button
+      if (count < 10) removeOrAddBtn(false);
       count = 0;
-      aHtml = "";
-      dHtml = "";
-      return fetch("iata.json");
+      return iataArray;
     })
-    .then((response) => response.json())
     .then((iataArray) => {
       renderAirportInfo(iataArray, isArrival);
     });

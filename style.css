@@ -4,7 +4,9 @@
   box-sizing: border-box;
 }
 body {
-  font-family: sans-serif;
+  font-size: 18px;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
   line-height: 1.25;
   font-weight: 500;
   color: rgb(80, 78, 78);
@@ -20,9 +22,11 @@ header {
   align-items: center;
   justify-content: center;
   margin-top: 5px;
+  min-height: 125px;
 }
 
 header h1 {
+  font-size: 32px;
   text-align: center;
   max-width: 800px;
   margin-left: 15%;
@@ -34,11 +38,11 @@ header h1 {
 }
 .dp-info,
 .ar-info {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .container {
-  width: 80%;
+  width: 85%;
   margin: 10px auto;
 
   border-radius: 10px;
@@ -101,36 +105,61 @@ header h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
-.load-early {
-  max-width: auto;
-  background-color: #ffa94d;
+.load-early:link,
+.load-early:visited {
+  display: inline-block;
+  background-color: #f76707;
   text-align: center;
   height: auto;
-  padding: 7px 7px;
+  padding: 7px 14px;
   cursor: pointer;
-  border-radius: 30px;
+  border-radius: 15px;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.4s;
+  font-weight: 500;
 }
-.load-more {
+
+.load-early:hover,
+.load-early:active {
+  background-color: #cf711f;
+}
+.load-more:link,
+.load-more:visited {
+  display: inline-block;
+  background-color: #12b886;
+  text-align: center;
+  height: auto;
+  padding: 7px 14px;
+  cursor: pointer;
+  border-radius: 15px;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.4s;
+  font-weight: 500;
+}
+.load-more:hover,
+.load-more:active {
+  background-color: #10a679;
+}
+
+.no-more {
   width: auto;
-  background-color: #38d9a9;
   text-align: center;
   height: auto;
   padding: 7px 7px;
-  cursor: pointer;
-  border-radius: 30px;
 }
 
 .flight-component {
-  background-color: #f8f9fa;
+  background-color: #fcffff;
   padding: 10px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.07);
+  box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.07);
   row-gap: 15px;
-  column-gap: 40px;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 .airport {
@@ -143,4 +172,21 @@ header h1 {
 }
 .hidden {
   display: none;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+@media screen and (max-width: 500px) {
+  header h1 {
+    font-size: 28px;
+    line-height: 1.2;
+  }
+  body {
+    font-size: 16px;
+  }
+  header {
+    height: 20vh;
+  }
 }
