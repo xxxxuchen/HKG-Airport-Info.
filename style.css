@@ -17,6 +17,10 @@ header {
   width: 99%;
   margin: 0 auto;
   background-color: #66d9e8;
+  background-image: linear-gradient(
+    rgba(59, 200, 219, 0.737),
+    rgba(102, 217, 232, 0.721)
+  );
   height: 18vh;
   display: flex;
   align-items: center;

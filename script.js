@@ -110,6 +110,17 @@ const removeFlightsContainer = function (arr) {
   }
 };
 
+const airportInfoString = function (codes) {
+  let airportInfo = "";
+  codes.forEach((code) => {
+    for (const data of iataArray) {
+      if (data.iata_code === code)
+        airportInfo += `${data.municipality}&nbsp;(${data.name})<br>`;
+    }
+  });
+  return airportInfo;
+};
+
 const displayFlight = function (arrival, list) {
   let flightNumberStr = "";
   list.flight.forEach((flt) => {
@@ -117,23 +128,23 @@ const displayFlight = function (arrival, list) {
       flt.no.split(" ").join("&nbsp") + "&nbsp;&nbsp;&nbsp;&#32;";
   });
   if (arrival) {
-    const originString = [...list.origin];
+    const airportInfo = airportInfoString(list.origin);
     aHtml = `
     <div class="flight-component"> 
       <div class="flight-no"><span class="bold">Flight No.:</span> <span>${flightNumberStr}</span></div>
       <div class="time"><span class="bold">Schedule Time:</span> <span>${list.time}</span></div>
-      <div class="airport origin">${originString}</div>
+      <div class="airport origin"><span class="bold">Origin (Airport):</span><br>${airportInfo}</div>
       <div class="flight-data"><span class="bold">Parking Stand:</span>&nbsp;${list.stand}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Hall:</span>&nbsp;${list.hall}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Belt:</span>&nbsp;${list.baggage}</div>
       <div class="status"><span class="bold">Status:</span>&nbsp;<span>${list.status}</span></div>
     </div>  `;
     arrFlightsContainer.insertAdjacentHTML("beforeend", aHtml);
   } else {
-    const destinationString = [...list.destination];
+    const airportInfo = airportInfoString(list.destination);
     dHtml = `
     <div class="flight-component"> 
       <div class="flight-no"><span class="bold">Flight No.:</span> ${flightNumberStr}</div>
       <div class="time"><span class="bold">Schedule Time:</span> ${list.time}</div>
-      <div class="airport destination">${destinationString}</div>
+      <div class="airport destination"><span class="bold">Destination (Airport):</span><br>${airportInfo}</div>
       <div class="flight-data"><span class="bold">Terminal:</span>&nbsp;${list.terminal}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Aisle:</span>&nbsp;${list.aisle}&nbsp;&nbsp;&nbsp;&#32<span class="bold">Gate:</span>&nbsp;${list.gate} </div>
       <div class="status"><span class="bold">Status:</span>&nbsp;${list.status} </div>
     </div>  `;
@@ -141,51 +152,17 @@ const displayFlight = function (arrival, list) {
   }
 };
 
-const renderAirportInfo = function (dataArray, isArrival) {
-  let airportInfo = "";
-  if (isArrival) {
-    const childList = arrFlightsContainer.children;
-    Array.from(childList).forEach((component) => {
-      const arrNode = component.querySelector(".origin");
-      const codes = arrNode.textContent.split(",");
-      codes.forEach((code) => {
-        for (const data of dataArray) {
-          if (data.iata_code === code) {
-            airportInfo += `${data.municipality}&nbsp;(${data.name})<br>`;
-          }
-        }
-      });
-      arrNode.innerHTML = `<span class="bold">Origin (Airport):</span><br>${airportInfo}`;
-      airportInfo = "";
-    });
-  } else {
-    const childList = deptFlightsContainer.children;
-    Array.from(childList).forEach((component) => {
-      const destNode = component.querySelector(".destination");
-      const codes = destNode.textContent.split(",");
-      codes.forEach((code) => {
-        for (const data of dataArray) {
-          if (data.iata_code === code) {
-            airportInfo += `${data.municipality}&nbsp;(${data.name})<br>`;
-          }
-        }
-      });
-      destNode.innerHTML = `<span class="bold">Destination (Airport):</span><br>${airportInfo}`;
-      airportInfo = "";
-    });
-  }
-};
-
+// only fetch iata.json once to improve performance
 const getAirportPromise = async function () {
   const response = await fetch("iata.json");
   const dataArray = await response.json();
   return dataArray;
 };
-
 // use IIFE to store the data form iata.json
 let iataArray;
 (async function () {
   iataArray = await getAirportPromise();
+  console.log(iataArray);
 })();
 
 let count = 0;
@@ -230,53 +207,5 @@ const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
       // when flights number is less than 10, no loadMore button
       if (count < 10) removeOrAddBtn(false);
       count = 0;
-      return iataArray;
-    })
-    .then((iataArray) => {
-      renderAirportInfo(iataArray, isArrival);
     });
 };
-
-// const getAirport = function (iataCode, isDeparture) {
-//   let airportInfo = "";
-//   fetch("iata.json")
-//     .then((response) => response.json())
-//     .then((dataArray) => {
-//       dataArray.forEach((data) => {
-//         if (data.iata_code === iataCode) {
-//           airportInfo = `${data.municipality}&nbsp;(${data.name})`;
-//         }
-//       });
-//       return airportInfo;
-//     })
-//     .then((info) => {
-//       if (isDeparture) {
-//         console.log(deptFlightsContainer.lastElementChild);
-//         const destNode =
-//           deptFlightsContainer.lastElementChild.querySelector(".destination");
-//         destNode.innerHTML = `Destination (Airport): ${info}`;
-//       } else {
-//         const arrNode =
-//           arrFlightsContainer.lastElementChild.querySelector(".origin");
-//         arrNode.innerHTML = `Origin (Airport): ${info}`;
-//       }
-//     });
-// };
-
-// const getAirportPromise = async function (iataCode) {
-//   let airportInfo = "";
-//   const response = await fetch("iata.json");
-//   const dataArray = await response.json();
-//   await dataArray.forEach((data) => {
-//     if (data.iata_code === iataCode) {
-//       airportInfo = `${data.municipality}&nbsp;(${data.name})`;
-//       // console.log(airportInfo);
-//     }
-//   });
-//   return airportInfo;
-// };
-// let air = "";
-// const getAirport = async function (iatacode) {
-//   air = await getAirportPromise(iatacode);
-//   console.log(air);
-// };
