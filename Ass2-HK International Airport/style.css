@@ -18,9 +18,13 @@ header {
   margin: 0 auto;
   background-color: #66d9e8;
   background-image: linear-gradient(
-    rgba(59, 200, 219, 0.737),
-    rgba(102, 217, 232, 0.721)
-  );
+      rgba(59, 200, 219, 0.7),
+      rgba(102, 217, 232, 0.7)
+    ),
+    url(blog-header-flight.jpg);
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover;
+  background-position: 0px 60%;
   height: 18vh;
   display: flex;
   align-items: center;
@@ -60,6 +64,12 @@ header h1 {
 .switch-container {
   height: 70px;
   background-color: #ced4da;
+  background-image: linear-gradient(
+    to right,
+    #ced4da,
+    rgba(226, 229, 233, 0.362),
+    #ced4da
+  );
   display: flex;
   justify-content: center;
   align-items: center;

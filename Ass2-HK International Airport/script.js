@@ -209,3 +209,17 @@ const getFlightComponent = function (isArrival, isLoadMore, isLoadEarly) {
       count = 0;
     });
 };
+
+// class Person {
+//   name = "barry";
+//   constructor(age) {
+//     this.age = age;
+//   }
+//   sayHi() {
+//     console.log("hi");
+//   }
+// }
+
+// const cx = new Person(3);
+// console.log(cx);
+// cx.sayHi();
